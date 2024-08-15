@@ -5,6 +5,7 @@ xcode/"Breathe Easy"/View/Secrets.swift
 __pycache__/
 *.py[cod]
 *$py.class
+virtualenv/bin
 
 # C extensions
 *.so

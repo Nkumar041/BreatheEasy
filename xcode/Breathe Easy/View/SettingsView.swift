@@ -10,8 +10,8 @@ import Firebase
 import GoogleSignIn
 
 struct Settings: View {
-    @Binding var ACTScore: Double
-    @Binding var mainViewNum: Int
+//    @Binding var ACTScore: Double
+//    @Binding var mainViewNum: Int
     @AppStorage("genderSelected") var genderSelected = 0
     @AppStorage("page") var page = 1
     @AppStorage("progressPage") var progressPage = 0
@@ -192,28 +192,28 @@ struct Settings: View {
     func goToHome(){
         withAnimation{
            // navigationDirection = .backward
-            mainViewNum = 0
+//            mainViewNum = 0
         }
     }
     
     func goToAbout(){
         withAnimation{
           //  navigationDirection = .forward
-            mainViewNum = 2
+//            mainViewNum = 2
         }
     }
     
     func goToProfile(){
         withAnimation{
           //  navigationDirection = .forward
-            mainViewNum = 3
+//            mainViewNum = 3
         }
     }
     
     func goToDelete(){
         withAnimation{
           //  navigationDirection = .forward
-            mainViewNum = 4
+//            mainViewNum = 4
         }
     }
     
@@ -251,7 +251,7 @@ struct Settings: View {
         activity = ""
         sliderValue = 50
         progressPage = 0
-        mainViewNum = 0
+//        mainViewNum = 0
     }
     
     func logOut(){
@@ -262,7 +262,7 @@ struct Settings: View {
             log_Status = false
             page = 1
             progressPage = 0
-            mainViewNum = 0
+//            mainViewNum = 0
             
         } else if log_Status2{
             DispatchQueue.global(qos: .background).async {
@@ -273,7 +273,7 @@ struct Settings: View {
             log_Status2 = false
             page = 1
             progressPage = 0
-            mainViewNum = 0
+//            mainViewNum = 0
         }
         
         fullname = ""
@@ -285,7 +285,7 @@ struct Settings: View {
     }
 }
 
-//#Preview {
-//        //SettingsView()
-//    Settings()
-//}
+#Preview {
+        //SettingsView()
+    Settings()
+}

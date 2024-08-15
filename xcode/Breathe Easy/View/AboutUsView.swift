@@ -74,10 +74,21 @@ How does Breathe Easy work and how do I best utilize it? As mentioned earlier, B
 What does my score actually mean? We split the various scores into 3 sub groups, being high, moderate, and low control. You will be able to see what level of control you fall into based on the color of the lung meter. A green meter indicates high control, meaning that the conditions around you put you at low risk of heightened symptoms. Moderate and low control indicate moderate and high risk of heightened symptoms, respectively. However, do not panic if your ACT score is low! This is simply an indicator of how the environment you are in could impact your symptoms, and this certainly does not mean you will have an asthma attack. Interpret your score as a gentle warning, so you can take appropriate actions to put yourself in an environment that keeps your asthma symptoms happy.
 
 You now know everything you need to know to use Breathe Easy! For any clarifications regarding the Asthma Control Test, be sure to refer to the American Lung Association’s website. For any app specific inquiries, email help.breatheeasy@gmail.com. You can now Breathe Easy!
+
+For more information regarding the Asthma Control Test and how we predict it, please refer to the following links:
+
 """)
                         .font(Font.custom("Aeonik TRIAL", size: 14))
                         .foregroundColor(Color(red: 0.48, green: 0.51, blue: 0.51))
                         .offset(x: 0.50, y: 0)
+                        
+                        Link("Validity of Asthma Control Test", destination: URL(string: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5747547/#:~:text=Asthma%20Control%20Test%20(ACT),-The%20ACT%20is&text=A%20score%20between%2020%20and,indicates%20very%20poorly%20controlled%20asthma.")!)
+                            .font(Font.custom("Aeonik TRIAL", size: 14))
+                            .offset(x: 0.50, y: 0)
+
+                        Link("Original Asthma Control Test", destination: URL(string: "https://www.lung.org/getmedia/a7163a9c-13ab-4bc8-9286-6aa2f87506a5/act-12-and-older.pdf")!)
+                            .font(Font.custom("Aeonik TRIAL", size: 14))
+                            .offset(x: 0.50, y: 0)
                     }
                     .frame(width: 325, height: 216)
                 }
@@ -149,7 +160,3 @@ You now know everything you need to know to use Breathe Easy! For any clarificat
         }
     }
 }
-
-//#Preview {
-//    AboutUsView()
-//}

@@ -18,24 +18,27 @@ enum NavigationDirection {
     case forward, backward
 }
 
-struct MainViewNew: View{
+struct MainViewNew: View {
     @State var ACTScore = 0.0
     @State var mainViewNum = 0
     @AppStorage("fromAbout") var fromAbout = 0
-    
     @State var navigationDirection: NavigationDirection = .forward
-    
-    var body: some View{
-        ZStack{
-            if (mainViewNum == 0){
-                HomeView3(mainViewNum: $mainViewNum, ACTScore: $ACTScore, navigationDirection: $navigationDirection).transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .leading)))
-            }else if (mainViewNum == 1){
-                Settings(ACTScore: $ACTScore, mainViewNum: $mainViewNum)
-            }else if (mainViewNum == 2){
+
+    var body: some View {
+        ZStack {
+            if mainViewNum == 0 {
+                HomeView3(mainViewNum: $mainViewNum, ACTScore: $ACTScore, navigationDirection: $navigationDirection)
+                    .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .leading)))
+                    .onAppear {
+                        print("ACTScore on MainViewNew appear: \(ACTScore)")
+                    }
+            } else if mainViewNum == 1 {
+                Settings()
+            } else if mainViewNum == 2 {
                 AboutUsView(ACTScore: $ACTScore, mainViewNum: $mainViewNum)
-            } else if (mainViewNum == 3){
-                Profile(ACTScore: $ACTScore,mainViewNum: $mainViewNum)
-            } else if (mainViewNum == 4){
+            } else if mainViewNum == 3 {
+                Profile(ACTScore: $ACTScore, mainViewNum: $mainViewNum)
+            } else if mainViewNum == 4 {
                 DeleteAccountPage(mainViewNum: $mainViewNum, ACTScore: $ACTScore)
             }
         }
@@ -247,17 +250,6 @@ struct HomeView3: View {
                         .offset(x: 20, y: 0)
                 }
                 .offset(x: -119, y: 5.50)
-                ZStack() {
-                    Text("Insights")
-                        .font(Font.custom("Lufga", size: 24))
-                        .foregroundColor(Color(red: 0, green: 0.32, blue: 0.27))
-                        .offset(x: 20, y: 0)
-                    Text("Coming soon").font(Font.custom("Lufga", size: 12))
-                        .foregroundColor(Color(red: 0.48, green: 0.51, blue: 0.51))
-                        .offset(x: 16, y: 30)
-                }
-                .offset(x: -133, y: 210)
-                
             };Group {
                 ZStack() {
                     ZStack() {
@@ -288,14 +280,13 @@ struct HomeView3: View {
     }
     
     func observeCoordinateUpdates() {
-        
         deviceLocationService.coordinatesPublisher
             .receive(on: DispatchQueue.main)
             .sink { completion in
                 print("Handle \(completion) for error and finished subscription.")
             } receiveValue: { coordinates in
                 self.coordinates = (coordinates.latitude, coordinates.longitude)
-                Task{
+                Task {
                     await fetchCurrentWeather(latitude: coordinates.latitude, longitude: coordinates.longitude)
                     await fetchUVIndex(latitude: coordinates.latitude, longitude: coordinates.longitude)
                     await parseACTScore()
@@ -314,7 +305,7 @@ struct HomeView3: View {
     }
     
     // Function to fetch current weather data
-    func fetchCurrentWeather(latitude: Double, longitude: Double) async{
+    func fetchCurrentWeather(latitude: Double, longitude: Double) async {
         let weatherURLString = "https://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)&units=metric"
         
         fetchWeatherData(from: weatherURLString) { jsonResult in
@@ -327,82 +318,91 @@ struct HomeView3: View {
                     self.pressure = main["pressure"] as? Int ?? 0
                     self.temperature = main["temp"] as? Double ?? 0.0
                     self.windSpeed = wind["speed"] as? Double ?? 0.0
+                } else {
+                    print("Failed to parse weather data")
                 }
             }
         }
     }
     
     // Function to fetch UV index
-    func fetchUVIndex(latitude: Double, longitude: Double) async{
+    func fetchUVIndex(latitude: Double, longitude: Double) async {
         let uvURLString = "https://api.openweathermap.org/data/2.5/uvi?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)"
         
         fetchWeatherData(from: uvURLString) { jsonResult in
             DispatchQueue.main.async {
                 if let uvData = jsonResult as? [String: Any] {
                     self.uvi = uvData["value"] as? Double ?? 0.0
+                } else {
+                    print("Failed to parse UV index data")
                 }
             }
         }
     }
     
     // set model parameters that need to be modified
-    func setModelValues(){
-        
+    func setModelValues() {
         // set age (4 possible values)
-        if(sliderValue > 50){
+        if sliderValue > 50 {
             sliderValueModified = 3
-        } else if (sliderValue <= 50 && sliderValue >= 41){
+        } else if sliderValue <= 50 && sliderValue >= 41 {
             sliderValueModified = 2
-        } else if (sliderValue <= 40 && sliderValue >= 31){
+        } else if sliderValue <= 40 && sliderValue >= 31 {
             sliderValueModified = 1
-        } else if (sliderValue <= 30){
+        } else if sliderValue <= 30 {
             sliderValueModified = 0
         }
-        
+
         // set gender (male=1, female=0)
-        if(sex == "Male"){
+        if sex == "Male" {
             sexNum = 1
-        } else{
+        } else {
             sexNum = 0
         }
-        
+
         // set work (3 possible values)
-        if (work == "Occasionally"){
+        if work == "Occasionally" {
             workNum = 1
-        } else if (work == "Frequently"){
+        } else if work == "Frequently" {
             workNum = 0
-        } else{
+        } else {
             workNum = 2
         }
-        
+
         // set activity (3 possible values)
-        if (activity == "Occasionally"){
+        if activity == "Occasionally" {
             activityNum = 1
-        } else if (activity == "Frequently"){
+        } else if activity == "Frequently" {
             activityNum = 0
-        } else{
+        } else {
             activityNum = 2
         }
-        
+
         // set uvi
-        if (uvi <= 5){
+        if uvi <= 5 {
             uviModified = 1
-        } else{
+        } else {
             uviModified = 0
         }
     }
+
     
     func parseACTScore() async {
-        
         setModelValues()
         
         let ACTURLString = "https://nkumar04.pythonanywhere.com/predict?param1=2&param2=\(sliderValueModified)&param3=\(sexNum)&param4=\(workNum)&param5=\(activityNum)&param6=\(humidity)&param7=\(pressure)&param8=\(temperature)&param9=\(uviModified)&param10=\(windSpeed)"
         
         fetchACTScore(from: ACTURLString) { jsonResult in
             DispatchQueue.main.async {
-                if let ACTData = jsonResult as? [String: Any] {
-                    let pred = ACTData["prediction"] as? Double ?? 0.0
+                guard let ACTData = jsonResult as? [String: Any] else {
+                    print("Invalid ACT data format")
+                    return
+                }
+                
+                if let pred = ACTData["prediction"] as? Double {
                     self.ACTScore = pred > 25.0 && pred < 100 ? 25 : pred.rounded()
+                } else {
+                    print("Prediction not found in ACT data")
                 }
             }
         }
@@ -414,11 +414,12 @@ struct HomeView3: View {
             }
         }
     }
+
     
     // Generic function to fetch weather data
     func fetchWeatherData(from urlString: String, completion: @escaping (Any?) -> Void) {
         guard let url = URL(string: urlString) else {
-            print("Invalid URL")
+            print("Invalid URL: \(urlString)")
             completion(nil)
             return
         }
@@ -449,12 +450,12 @@ struct HomeView3: View {
     // fetch model value
     func fetchACTScore(from urlString: String, completion: @escaping (Any?) -> Void) {
         guard let url = URL(string: urlString) else {
-            print("Invalid URL")
+            print("Invalid URL: \(urlString)")
             completion(nil)
             return
         }
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 print("Error fetching data: \(error)")
                 completion(nil)
@@ -474,8 +475,10 @@ struct HomeView3: View {
                 print("Error parsing JSON: \(error)")
                 completion(nil)
             }
-        }.resume()
+        }
+        task.resume()
     }
+
     
 }
 
